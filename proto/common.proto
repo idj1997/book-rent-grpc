@@ -1,0 +1,11 @@
+syntax = "proto3";
+package common.v1;
+
+option go_package = "github.com/idj1997/book-rent-grpc/proto/proto_common";
+
+import "google/protobuf/timestamp.proto";
+
+message Metadata {
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp updated_at = 2;
+}

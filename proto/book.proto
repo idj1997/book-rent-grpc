@@ -1,0 +1,41 @@
+syntax = "proto3";
+package book.v1;
+option go_package = "github.com/idj1997/book-rent-grpc/proto/proto_book";
+
+import "google/protobuf/empty.proto";
+import "common.proto";
+
+service BookService {
+  rpc GetBookByID(GetBookByIDRequest) returns (Book) {}
+  rpc CreateBook(CreateBookRequest) returns (Book) {}
+  rpc UpdateBookStock(UpdateBookStockRequest) returns (Book) {}
+  rpc DeleteBook(DeleteBookRequest) returns (google.protobuf.Empty) {}
+}
+
+message Book {
+  common.v1.Metadata metadata = 1;
+  int32 id = 2;
+  string title = 3;
+  string content = 4;
+  int32 stock = 5;
+}
+
+message CreateBookRequest {
+  string title = 1;
+  string content = 2;
+  int32 stock = 3;
+}
+
+message GetBookByIDRequest {
+  int32 id = 1;
+}
+
+message UpdateBookStockRequest {
+  int32 id = 1;
+  int32 newStock = 2;
+}
+
+message DeleteBookRequest {
+  int32 id = 1;
+}
+
