@@ -32,7 +32,12 @@ func (b *BookServer) CreateBook(ctx context.Context, request *proto_book.CreateB
 
 	_, err := b.Service.Create(&book)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Something went wrong while creating book.")
+		serviceErr := mappings.ErrorToServiceError(err)
+		if serviceErr.Type == service.InvalidArguments {
+			return nil, status.Errorf(codes.FailedPrecondition, "Invalid book data.")
+		} else {
+			return nil, status.Errorf(codes.Internal, "")
+		}
 	}
 	return mappings.BookToProtoBook(&book), nil
 }
@@ -46,12 +51,21 @@ func (b *BookServer) UpdateBookStock(ctx context.Context, request *proto_book.Up
  		} else if serviceErr.Type == service.InvalidArguments{
  			return nil, status.Errorf(codes.FailedPrecondition, "Invalid stock value.")
 		} else {
-			return nil, status.Errorf(codes.Internal, "Something went wrong while updating book stock.")
+			return nil, status.Errorf(codes.Internal, "")
 		}
 	}
 	return mappings.BookToProtoBook(book), nil
 }
 
 func (b *BookServer) DeleteBook(ctx context.Context, request *proto_book.DeleteBookRequest) (*empty.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "")
+	err := b.Service.Delete(int(request.Id))
+	if err != nil {
+		serviceErr := mappings.ErrorToServiceError(err)
+		if serviceErr.Type == service.NotFound {
+			return nil, status.Errorf(codes.NotFound, "Book not found.")
+		} else {
+			return nil, status.Errorf(codes.Internal, "")
+		}
+	}
+	return &empty.Empty{}, nil
 }
